@@ -1,0 +1,15 @@
+[
+  {
+    "event_id": "AUDIT-000001",
+    "timestamp": "2026-08-18T15:51:25.121067",
+    "agent": "horus",
+    "action": "FREEZE_ACCOUNT",
+    "target_type": "ACCOUNT",
+    "target_id": "ACC-2048",
+    "incident_id": "INC-001",
+    "details": {
+      "previous_status": "ACTIVE",
+      "new_status": "FROZEN"
+    }
+  }
+]

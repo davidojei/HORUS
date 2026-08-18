@@ -1,5 +1,14 @@
 from google.adk.agents import Agent
 
+from .investigation_tools import investigate_transaction
+
+from .action_tools import (
+    freeze_account_tool,
+    revoke_device_tool,
+    flag_transaction_tool,
+    create_incident_tool,
+)
+
 from .fraud.agent import fraud_agent
 from .security.agent import security_agent
 
@@ -43,5 +52,12 @@ tool successfully performed that action.
     sub_agents=[
     fraud_agent,
     security_agent,
+],
+    tools=[
+    investigate_transaction,
+    freeze_account_tool,
+    revoke_device_tool,
+    flag_transaction_tool,
+    create_incident_tool,
 ],
 )

@@ -486,7 +486,7 @@
     "city": "Enugu",
     "account_type": "BUSINESS",
     "risk_score": 18,
-    "status": "ACTIVE",
+    "status": "FROZEN",
     "created_at": "2024-08-02T12:49:51"
   },
   {
