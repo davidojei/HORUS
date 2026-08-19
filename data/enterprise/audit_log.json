@@ -11,5 +11,190 @@
       "previous_status": "ACTIVE",
       "new_status": "FROZEN"
     }
+  },
+  {
+    "event_id": "AUDIT-000002",
+    "timestamp": "2026-08-18T19:30:04.050669",
+    "agent": "horus",
+    "action": "REVOKE_DEVICE",
+    "target_type": "DEVICE",
+    "target_id": "DEV-99999",
+    "incident_id": "INC-001",
+    "details": {}
+  },
+  {
+    "event_id": "AUDIT-000003",
+    "timestamp": "2026-08-18T19:30:31.423104",
+    "agent": "horus",
+    "action": "FLAG_TRANSACTION",
+    "target_type": "TRANSACTION",
+    "target_id": "TX-FRAUD-001",
+    "incident_id": "INC-001",
+    "details": {}
+  },
+  {
+    "event_id": "AUDIT-000004",
+    "timestamp": "2026-08-18T19:31:10.062206",
+    "agent": "horus",
+    "action": "FLAG_TRANSACTION",
+    "target_type": "TRANSACTION",
+    "target_id": "TX-FRAUD-002",
+    "incident_id": "INC-001",
+    "details": {}
+  },
+  {
+    "event_id": "AUDIT-000005",
+    "timestamp": "2026-08-18T19:31:20.302271",
+    "agent": "horus",
+    "action": "FLAG_TRANSACTION",
+    "target_type": "TRANSACTION",
+    "target_id": "TX-FRAUD-003",
+    "incident_id": "INC-001",
+    "details": {}
+  },
+  {
+    "event_id": "AUDIT-000006",
+    "timestamp": "2026-08-18T19:31:27.923147",
+    "agent": "horus",
+    "action": "CREATE_INCIDENT",
+    "target_type": "INCIDENT",
+    "target_id": "INC-001",
+    "incident_id": "INC-001",
+    "details": {
+      "severity": "CRITICAL",
+      "type": "ACCOUNT_TAKEOVER"
+    }
+  },
+  {
+    "event_id": "AUDIT-000007",
+    "timestamp": "2026-08-18T19:47:39.547609",
+    "agent": "horus",
+    "action": "CREATE_INCIDENT",
+    "target_type": "INCIDENT",
+    "target_id": "INC-001",
+    "incident_id": "INC-001",
+    "details": {
+      "severity": "CRITICAL",
+      "type": "Account Takeover"
+    }
+  },
+  {
+    "event_id": "AUDIT-000008",
+    "timestamp": "2026-08-18T19:47:47.660341",
+    "agent": "horus",
+    "action": "FREEZE_ACCOUNT",
+    "target_type": "ACCOUNT",
+    "target_id": "ACC-2048",
+    "incident_id": "INC-001",
+    "details": {
+      "previous_status": "FROZEN",
+      "new_status": "FROZEN"
+    }
+  },
+  {
+    "event_id": "AUDIT-000009",
+    "timestamp": "2026-08-18T19:47:59.822285",
+    "agent": "horus",
+    "action": "REVOKE_DEVICE",
+    "target_type": "DEVICE",
+    "target_id": "DEV-99999",
+    "incident_id": "INC-001",
+    "details": {}
+  },
+  {
+    "event_id": "AUDIT-000010",
+    "timestamp": "2026-08-18T19:48:20.457237",
+    "agent": "horus",
+    "action": "FLAG_TRANSACTION",
+    "target_type": "TRANSACTION",
+    "target_id": "TX-FRAUD-001",
+    "incident_id": "INC-001",
+    "details": {}
+  },
+  {
+    "event_id": "AUDIT-000011",
+    "timestamp": "2026-08-18T19:48:32.200262",
+    "agent": "horus",
+    "action": "FLAG_TRANSACTION",
+    "target_type": "TRANSACTION",
+    "target_id": "TX-FRAUD-002",
+    "incident_id": "INC-001",
+    "details": {}
+  },
+  {
+    "event_id": "AUDIT-000012",
+    "timestamp": "2026-08-18T19:48:38.173695",
+    "agent": "horus",
+    "action": "FLAG_TRANSACTION",
+    "target_type": "TRANSACTION",
+    "target_id": "TX-FRAUD-003",
+    "incident_id": "INC-001",
+    "details": {}
+  },
+  {
+    "event_id": "AUDIT-000013",
+    "timestamp": "2026-08-19T11:27:23.492672",
+    "agent": "horus",
+    "action": "CREATE_INCIDENT",
+    "target_type": "INCIDENT",
+    "target_id": "INC-001",
+    "incident_id": "INC-001",
+    "details": {
+      "severity": "CRITICAL",
+      "type": "Account Takeover"
+    }
+  },
+  {
+    "event_id": "AUDIT-000014",
+    "timestamp": "2026-08-19T11:27:30.509524",
+    "agent": "horus",
+    "action": "FREEZE_ACCOUNT",
+    "target_type": "ACCOUNT",
+    "target_id": "ACC-2048",
+    "incident_id": "INC-001",
+    "details": {
+      "previous_status": "FROZEN",
+      "new_status": "FROZEN"
+    }
+  },
+  {
+    "event_id": "AUDIT-000015",
+    "timestamp": "2026-08-19T11:27:32.877016",
+    "agent": "horus",
+    "action": "REVOKE_DEVICE",
+    "target_type": "DEVICE",
+    "target_id": "DEV-99999",
+    "incident_id": "INC-001",
+    "details": {}
+  },
+  {
+    "event_id": "AUDIT-000016",
+    "timestamp": "2026-08-19T11:27:37.748314",
+    "agent": "horus",
+    "action": "FLAG_TRANSACTION",
+    "target_type": "TRANSACTION",
+    "target_id": "TX-FRAUD-001",
+    "incident_id": "INC-001",
+    "details": {}
+  },
+  {
+    "event_id": "AUDIT-000017",
+    "timestamp": "2026-08-19T11:27:38.554618",
+    "agent": "horus",
+    "action": "FLAG_TRANSACTION",
+    "target_type": "TRANSACTION",
+    "target_id": "TX-FRAUD-002",
+    "incident_id": "INC-001",
+    "details": {}
+  },
+  {
+    "event_id": "AUDIT-000018",
+    "timestamp": "2026-08-19T11:27:39.452670",
+    "agent": "horus",
+    "action": "FLAG_TRANSACTION",
+    "target_type": "TRANSACTION",
+    "target_id": "TX-FRAUD-003",
+    "incident_id": "INC-001",
+    "details": {}
   }
 ]

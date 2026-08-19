@@ -550008,7 +550008,10 @@
     "location": "Lagos",
     "device_id": "DEV-99999",
     "timestamp": "2026-08-17T14:32:11",
-    "status": "COMPLETED"
+    "status": "COMPLETED",
+    "fraud_flag": true,
+    "incident_id": "INC-001",
+    "flagged_at": "2026-08-19T11:27:37.047551"
   },
   {
     "transaction_id": "TX-FRAUD-002",
@@ -550019,7 +550022,10 @@
     "location": "Lagos",
     "device_id": "DEV-99999",
     "timestamp": "2026-08-17T14:32:11",
-    "status": "COMPLETED"
+    "status": "COMPLETED",
+    "fraud_flag": true,
+    "incident_id": "INC-001",
+    "flagged_at": "2026-08-19T11:27:37.892987"
   },
   {
     "transaction_id": "TX-FRAUD-003",
@@ -550030,6 +550036,9 @@
     "location": "Lagos",
     "device_id": "DEV-99999",
     "timestamp": "2026-08-17T14:32:11",
-    "status": "COMPLETED"
+    "status": "COMPLETED",
+    "fraud_flag": true,
+    "incident_id": "INC-001",
+    "flagged_at": "2026-08-19T11:27:38.720006"
   }
 ]

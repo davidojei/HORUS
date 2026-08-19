@@ -14004,6 +14004,8 @@
     "account_id": "ACC-2048",
     "first_seen": "2026-08-17T14:29:00",
     "location": "Lagos",
-    "trusted": false
+    "trusted": false,
+    "revoked": true,
+    "revoked_at": "2026-08-19T11:27:32.831135"
   }
 ]
