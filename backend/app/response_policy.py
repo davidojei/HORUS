@@ -69,7 +69,7 @@ def determine_response(
             },
         ]
 
-    elif risk_level == "MEDopIUM":
+    elif risk_level == "MEDoIUM":
 
         response["actions"] = [
             {
