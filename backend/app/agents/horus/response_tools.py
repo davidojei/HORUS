@@ -5,13 +5,9 @@ from services.data_service import (
 from detection.transaction_detector import detect_transaction
 from detection.risk_engine import calculate_risk
 from response_policy import determine_response
-from .response_executor import execute_response
 
 
 def determine_transaction_response(transaction_id: str) -> dict:
-    """
-    Determine and execute the containment response for a transaction.
-    """
 
     transaction = get_transaction(transaction_id)
 
@@ -43,20 +39,12 @@ def determine_transaction_response(transaction_id: str) -> dict:
         related_transactions=related_transactions,
     )
 
-    incident_id = f"INC-{transaction_id.split('-')[-1]}"
-
-    execution = execute_response(
-        response=response,
-        incident_id=incident_id,
-    )
-
     return {
-        "success": execution["success"],
+        "success": True,
         "transaction_id": transaction_id,
         "account_id": transaction["account_id"],
         "risk_score": risk_result["risk_score"],
         "risk_level": risk_result["risk_level"],
         "signals": risk_result["signals"],
         "actions": response["actions"],
-        "execution": execution,
     }

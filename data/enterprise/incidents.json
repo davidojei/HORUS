@@ -52,5 +52,14 @@
     "summary": "Automated HORUS incident response for ACCOUNT_TAKEOVER.",
     "status": "OPEN",
     "created_at": "2026-08-24T14:31:57.438211"
+  },
+  {
+    "incident_id": "INC-001",
+    "type": "ACCOUNT_TAKEOVER",
+    "severity": "CRITICAL",
+    "account_id": "ACC-2048",
+    "summary": "Automated HORUS incident response for ACCOUNT_TAKEOVER.",
+    "status": "OPEN",
+    "created_at": "2026-08-24T14:53:05.782660"
   }
 ]
