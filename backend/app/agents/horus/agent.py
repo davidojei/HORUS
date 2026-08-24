@@ -1,7 +1,7 @@
 from google.adk.agents import Agent
 
 from .investigation_tools import investigate_transaction
-
+from .response_tools import determine_transaction_response
 from .action_tools import (
     freeze_account_tool,
     revoke_device_tool,
@@ -108,21 +108,50 @@ Containment is allowed only when the user explicitly asks Horus to:
 For a confirmed CRITICAL account takeover involving active compromise,
 the normal containment sequence is:
 
-1. Create the incident.
+1. Obtain the deterministic risk assessment from the fraud investigation.
 
-2. Freeze the affected account.
+2. Call determine_transaction_response(transaction_id) to obtain the
+   authoritative containment plan.
 
-3. Revoke the compromised or untrusted device.
+3. Treat the returned action plan as the authoritative source for which
+   containment actions should be performed.
 
-4. Flag the confirmed fraudulent transaction.
+4. Only execute the returned actions when the user has explicitly
+   authorized containment/remediation/action.
 
-5. Flag other transactions that are clearly part of the same fraudulent
-   activity.
+5. Execute each permitted action using the corresponding action tool.
 
 6. Verify the result of every action.
 
 7. Report successful and unsuccessful actions separately.
 
+8. Never execute an action merely because it was suggested by the
+   language model. The action must be present in the deterministic
+   response policy output.
+
+
+   ==================================================
+DETERMINISTIC RESPONSE POLICY
+==================================================
+
+The determine_transaction_response tool is authoritative for containment
+decisions.
+
+It determines which actions are appropriate based on the deterministic
+risk engine and response policy.
+
+Do not independently invent, add, remove, or modify actions returned by
+this tool.
+
+The response policy determines WHAT should happen.
+
+The action tools determine WHETHER the requested state change actually
+occurred.
+
+Only report an action as executed when its corresponding action tool
+returns success=True.
+
+   
 ==================================================
 ACCOUNT TAKEOVER RESPONSE
 ==================================================
@@ -242,10 +271,11 @@ with operational actions.
     ],
 
     tools=[
-        investigate_transaction,
-        freeze_account_tool,
-        revoke_device_tool,
-        flag_transaction_tool,
-        create_incident_tool,
+    investigate_transaction,
+    determine_transaction_response,
+    freeze_account_tool,
+    revoke_device_tool,
+    flag_transaction_tool,
+    create_incident_tool,
     ],
 )

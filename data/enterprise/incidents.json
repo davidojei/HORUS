@@ -25,5 +25,23 @@
     "summary": "Critical Account Takeover of business account ACC-2048. Unauthorized access from new device DEV-99999 in Lagos led to three concurrent fraudulent transactions totaling 1,815,000 NGN.",
     "status": "OPEN",
     "created_at": "2026-08-19T11:27:23.467174"
+  },
+  {
+    "incident_id": "INC-001",
+    "type": "ACCOUNT_TAKEOVER",
+    "severity": "CRITICAL",
+    "account_id": "ACC-2048",
+    "summary": "Account Takeover of ACC-2048 via unauthorized device DEV-99999. High-velocity transactions TX-FRAUD-001, TX-FRAUD-002, and TX-FRAUD-003 were initiated from Lagos.",
+    "status": "OPEN",
+    "created_at": "2026-08-22T22:40:14.190439"
+  },
+  {
+    "incident_id": "INC-001",
+    "type": "ACCOUNT_TAKEOVER",
+    "severity": "CRITICAL",
+    "account_id": "ACC-2048",
+    "summary": "Automated HORUS incident response for ACCOUNT_TAKEOVER.",
+    "status": "OPEN",
+    "created_at": "2026-08-24T09:37:07.579863"
   }
 ]
