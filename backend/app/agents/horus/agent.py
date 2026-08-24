@@ -2,12 +2,7 @@ from google.adk.agents import Agent
 
 from .investigation_tools import investigate_transaction
 from .response_tools import determine_transaction_response
-from .action_tools import (
-    freeze_account_tool,
-    revoke_device_tool,
-    flag_transaction_tool,
-    create_incident_tool,
-)
+
 
 from .fraud.agent import fraud_agent
 from .security.agent import security_agent
@@ -110,24 +105,22 @@ the normal containment sequence is:
 
 1. Obtain the deterministic risk assessment from the fraud investigation.
 
-2. Call determine_transaction_response(transaction_id) to obtain the
-   authoritative containment plan.
+2. You MUST call determine_transaction_response(transaction_id) when
+   containment is explicitly authorized.
 
-3. Treat the returned action plan as the authoritative source for which
-   containment actions should be performed.
+3. Do not produce a containment result from your own reasoning.
 
-4. Only execute the returned actions when the user has explicitly
-   authorized containment/remediation/action.
+4. The response from determine_transaction_response is the ONLY source
+   for containment actions and execution results.
 
-5. Execute each permitted action using the corresponding action tool.
+5. Do not call or recommend executing individual action tools directly.
 
-6. Verify the result of every action.
+6. Do NOT call freeze_account_tool, revoke_device_tool,
+   flag_transaction_tool, or create_incident_tool directly.
 
-7. Report successful and unsuccessful actions separately.
+7. Verify the execution results returned by determine_transaction_response.
 
-8. Never execute an action merely because it was suggested by the
-   language model. The action must be present in the deterministic
-   response policy output.
+8. Report only actions whose execution result has success=True.
 
 
    ==================================================
@@ -273,9 +266,5 @@ with operational actions.
     tools=[
     investigate_transaction,
     determine_transaction_response,
-    freeze_account_tool,
-    revoke_device_tool,
-    flag_transaction_tool,
-    create_incident_tool,
     ],
 )
