@@ -17,7 +17,7 @@ AUDIT_FILE = DATA_DIR / "audit_log.json"
 
 
 def _load(path):
-    with open(path, "r", encoding="utf-8") as f:
+    with open(path, "r", encoding="utf-8-sig") as f:
         return json.load(f)
 
 
@@ -197,9 +197,25 @@ def create_incident(
     incidents_file = DATA_DIR / "incidents.json"
 
     try:
-        incidents = _load(incidents_file)
+        data = _load(incidents_file)
+
+        # Support both a single incident object and legacy list format
+        if isinstance(data, dict):
+            incidents = [data]
+        else:
+            incidents = data
+
     except FileNotFoundError:
         incidents = []
+
+    # Prevent duplicate incidents
+    for existing in incidents:
+        if existing["incident_id"] == incident_id:
+            return {
+                "success": True,
+                "incident": existing,
+                "already_exists": True,
+            }
 
     incident = {
         "incident_id": incident_id,
@@ -213,7 +229,11 @@ def create_incident(
 
     incidents.append(incident)
 
-    _save(incidents_file, incidents)
+    # Store a single object when there is only one incident
+    if len(incidents) == 1:
+        _save(incidents_file, incidents[0])
+    else:
+        _save(incidents_file, incidents)
 
     audit = _audit(
         action="CREATE_INCIDENT",
@@ -229,5 +249,6 @@ def create_incident(
     return {
         "success": True,
         "incident": incident,
+        "already_exists": False,
         "audit_event": audit,
     }

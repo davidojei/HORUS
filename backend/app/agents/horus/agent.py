@@ -7,6 +7,12 @@ from .response_tools import determine_transaction_response
 from .fraud.agent import fraud_agent
 from .security.agent import security_agent
 
+from .action_tools import (
+    freeze_account_tool,
+    revoke_device_tool,
+    flag_transaction_tool,
+    create_incident_tool,
+)
 
 root_agent = Agent(
     name="horus",
@@ -91,36 +97,43 @@ When asked to investigate a transaction:
 CONTAINMENT WORKFLOW
 ==================================================
 
-Containment is allowed only when the user explicitly asks Horus to:
+Containment is allowed only when the user explicitly authorizes it.
 
-- contain the incident
-- respond to the incident
-- remediate the incident
-- freeze/block/revoke/flag
-- take action
-- or otherwise clearly authorizes operational response.
+When containment is authorized:
 
-For a confirmed CRITICAL account takeover involving active compromise,
-the normal containment sequence is:
+1. Call determine_transaction_response(transaction_id).
 
-1. Obtain the deterministic risk assessment from the fraud investigation.
+2. Treat its returned "actions" list as the authoritative
+   containment plan.
 
-2. You MUST call determine_transaction_response(transaction_id) when
-   containment is explicitly authorized.
+3. Execute ONLY the actions returned in that list.
 
-3. Do not produce a containment result from your own reasoning.
+4. Map each action to its corresponding action tool:
 
-4. The response from determine_transaction_response is the ONLY source
-   for containment actions and execution results.
+   FREEZE_ACCOUNT
+   -> freeze_account_tool
 
-5. Do not call or recommend executing individual action tools directly.
+   REVOKE_DEVICE
+   -> revoke_device_tool
 
-6. Do NOT call freeze_account_tool, revoke_device_tool,
-   flag_transaction_tool, or create_incident_tool directly.
+   FLAG_TRANSACTIONS
+   -> flag_transaction_tool for each transaction ID
 
-7. Verify the execution results returned by determine_transaction_response.
+   CREATE_INCIDENT
+   -> create_incident_tool
 
-8. Report only actions whose execution result has success=True.
+5. Use the incident ID already present in the investigation.
+   If none exists, create one.
+
+6. Verify every action tool result.
+
+7. An action is considered executed ONLY when its tool returns
+   success=True.
+
+8. Never execute an action that was not returned by the
+   deterministic response policy.
+
+9. Do not invent, modify, or add containment actions.
 
 
    ==================================================
@@ -266,5 +279,9 @@ with operational actions.
     tools=[
     investigate_transaction,
     determine_transaction_response,
+    freeze_account_tool,
+    revoke_device_tool,
+    flag_transaction_tool,
+    create_incident_tool,
     ],
 )

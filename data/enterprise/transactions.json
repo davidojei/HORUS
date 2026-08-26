@@ -550011,7 +550011,7 @@
     "status": "COMPLETED",
     "fraud_flag": true,
     "incident_id": "INC-001",
-    "flagged_at": "2026-08-24T14:53:01.593205"
+    "flagged_at": "2026-08-26T11:28:17.006082"
   },
   {
     "transaction_id": "TX-FRAUD-002",
@@ -550025,7 +550025,7 @@
     "status": "COMPLETED",
     "fraud_flag": true,
     "incident_id": "INC-001",
-    "flagged_at": "2026-08-24T14:53:03.195095"
+    "flagged_at": "2026-08-26T11:29:13.817604"
   },
   {
     "transaction_id": "TX-FRAUD-003",
@@ -550039,6 +550039,6 @@
     "status": "COMPLETED",
     "fraud_flag": true,
     "incident_id": "INC-001",
-    "flagged_at": "2026-08-24T14:53:04.686292"
+    "flagged_at": "2026-08-26T11:29:58.209664"
   }
 ]

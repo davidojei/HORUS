@@ -1,65 +1,9 @@
-[
-  {
-    "incident_id": "INC-001",
-    "type": "ACCOUNT_TAKEOVER",
-    "severity": "CRITICAL",
-    "account_id": "ACC-2048",
-    "summary": "Coordinated account takeover involving untrusted device and concurrent high-value transactions.",
-    "status": "OPEN",
-    "created_at": "2026-08-18T19:31:27.896384"
-  },
-  {
-    "incident_id": "INC-001",
-    "type": "Account Takeover",
-    "severity": "CRITICAL",
-    "account_id": "ACC-2048",
-    "summary": "Account Takeover of ACC-2048 by unauthorized device DEV-99999 in Lagos, resulting in 1,815,000 NGN in fraudulent transactions (TX-FRAUD-001, TX-FRAUD-002, TX-FRAUD-003).",
-    "status": "OPEN",
-    "created_at": "2026-08-18T19:47:39.542305"
-  },
-  {
-    "incident_id": "INC-001",
-    "type": "Account Takeover",
-    "severity": "CRITICAL",
-    "account_id": "ACC-2048",
-    "summary": "Critical Account Takeover of business account ACC-2048. Unauthorized access from new device DEV-99999 in Lagos led to three concurrent fraudulent transactions totaling 1,815,000 NGN.",
-    "status": "OPEN",
-    "created_at": "2026-08-19T11:27:23.467174"
-  },
-  {
-    "incident_id": "INC-001",
-    "type": "ACCOUNT_TAKEOVER",
-    "severity": "CRITICAL",
-    "account_id": "ACC-2048",
-    "summary": "Account Takeover of ACC-2048 via unauthorized device DEV-99999. High-velocity transactions TX-FRAUD-001, TX-FRAUD-002, and TX-FRAUD-003 were initiated from Lagos.",
-    "status": "OPEN",
-    "created_at": "2026-08-22T22:40:14.190439"
-  },
-  {
-    "incident_id": "INC-001",
-    "type": "ACCOUNT_TAKEOVER",
-    "severity": "CRITICAL",
-    "account_id": "ACC-2048",
-    "summary": "Automated HORUS incident response for ACCOUNT_TAKEOVER.",
-    "status": "OPEN",
-    "created_at": "2026-08-24T09:37:07.579863"
-  },
-  {
-    "incident_id": "INC-001",
-    "type": "ACCOUNT_TAKEOVER",
-    "severity": "CRITICAL",
-    "account_id": "ACC-2048",
-    "summary": "Automated HORUS incident response for ACCOUNT_TAKEOVER.",
-    "status": "OPEN",
-    "created_at": "2026-08-24T14:31:57.438211"
-  },
-  {
-    "incident_id": "INC-001",
-    "type": "ACCOUNT_TAKEOVER",
-    "severity": "CRITICAL",
-    "account_id": "ACC-2048",
-    "summary": "Automated HORUS incident response for ACCOUNT_TAKEOVER.",
-    "status": "OPEN",
-    "created_at": "2026-08-24T14:53:05.782660"
-  }
-]
+{
+    "incident_id":  "INC-001",
+    "type":  "ACCOUNT_TAKEOVER",
+    "severity":  "CRITICAL",
+    "account_id":  "ACC-2048",
+    "summary":  "Coordinated account takeover involving untrusted device and concurrent high-value transactions.",
+    "status":  "OPEN",
+    "created_at":  "2026-08-18T19:31:27.896384"
+}
