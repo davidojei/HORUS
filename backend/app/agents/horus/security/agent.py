@@ -5,7 +5,7 @@ from .tools import investigate_account_security
 
 security_agent = Agent(
     name="security_investigator",
-    model="gemini-3.5-flash",
+    model="gemini-3.5-flash-lite",
     description=(
         "Specialist agent responsible for investigating authentication, "
         "device, session, and geographic security anomalies."

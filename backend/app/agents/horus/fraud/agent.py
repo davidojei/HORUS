@@ -6,7 +6,7 @@ from .detection_tools import detect_transaction_risk
 
 fraud_agent = Agent(
     name="fraud_investigator",
-    model="gemini-3.5-flash",
+    model="gemini-3.1-flash-lite",
 
     description=(
         "Specialist agent responsible for investigating financial "

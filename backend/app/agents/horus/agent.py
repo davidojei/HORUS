@@ -16,7 +16,7 @@ from .action_tools import (
 
 root_agent = Agent(
     name="horus",
-    model="gemini-3.5-flash",
+    model="gemini-3.5-flash-lite",
 
     description=(
         "Horus is an enterprise financial-security operations orchestrator "

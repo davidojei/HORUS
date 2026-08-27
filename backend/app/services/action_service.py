@@ -60,6 +60,7 @@ def _audit(action, target_type, target_id, incident_id, details=None):
 def freeze_account(account_id: str, incident_id: str):
     """
     Freeze an account to prevent further transactions.
+    Idempotent: does not create a new audit event if already frozen.
     """
 
     accounts = _load(ACCOUNTS_FILE)
@@ -68,6 +69,17 @@ def freeze_account(account_id: str, incident_id: str):
         if account["account_id"] == account_id:
 
             previous_status = account["status"]
+
+            # Already frozen — nothing to change
+            if previous_status == "FROZEN":
+                return {
+                    "success": True,
+                    "action": "FREEZE_ACCOUNT",
+                    "account_id": account_id,
+                    "status": "FROZEN",
+                    "already_frozen": True,
+                }
+
             account["status"] = "FROZEN"
 
             _save(ACCOUNTS_FILE, accounts)
@@ -88,6 +100,7 @@ def freeze_account(account_id: str, incident_id: str):
                 "action": "FREEZE_ACCOUNT",
                 "account_id": account_id,
                 "status": "FROZEN",
+                "already_frozen": False,
                 "audit_event": audit,
             }
 
@@ -104,12 +117,23 @@ def freeze_account(account_id: str, incident_id: str):
 def revoke_device(device_id: str, incident_id: str):
     """
     Revoke trust from a device.
+    Idempotent: does not create a new audit event if already revoked.
     """
 
     devices = _load(DEVICES_FILE)
 
     for device in devices:
         if device["device_id"] == device_id:
+
+            # Already revoked — nothing to change
+            if device.get("revoked") is True:
+                return {
+                    "success": True,
+                    "action": "REVOKE_DEVICE",
+                    "device_id": device_id,
+                    "revoked": True,
+                    "already_revoked": True,
+                }
 
             device["trusted"] = False
             device["revoked"] = True
@@ -129,6 +153,7 @@ def revoke_device(device_id: str, incident_id: str):
                 "action": "REVOKE_DEVICE",
                 "device_id": device_id,
                 "revoked": True,
+                "already_revoked": False,
                 "audit_event": audit,
             }
 
@@ -137,7 +162,6 @@ def revoke_device(device_id: str, incident_id: str):
         "error": f"Device {device_id} not found",
     }
 
-
 # ---------------------------------------------------------
 # TRANSACTION ACTIONS
 # ---------------------------------------------------------
@@ -145,12 +169,23 @@ def revoke_device(device_id: str, incident_id: str):
 def flag_transaction(transaction_id: str, incident_id: str):
     """
     Flag a transaction for fraud review/reversal.
+    Idempotent: does not create a new audit event if already flagged.
     """
 
     transactions = _load(TRANSACTIONS_FILE)
 
     for transaction in transactions:
         if transaction["transaction_id"] == transaction_id:
+
+            # Already flagged
+            if transaction.get("fraud_flag") is True:
+                return {
+                    "success": True,
+                    "action": "FLAG_TRANSACTION",
+                    "transaction_id": transaction_id,
+                    "fraud_flag": True,
+                    "already_flagged": True,
+                }
 
             transaction["fraud_flag"] = True
             transaction["incident_id"] = incident_id
@@ -170,6 +205,7 @@ def flag_transaction(transaction_id: str, incident_id: str):
                 "action": "FLAG_TRANSACTION",
                 "transaction_id": transaction_id,
                 "fraud_flag": True,
+                "already_flagged": False,
                 "audit_event": audit,
             }
 
@@ -199,7 +235,7 @@ def create_incident(
     try:
         data = _load(incidents_file)
 
-        # Support both a single incident object and legacy list format
+        # Normalize legacy single-object format
         if isinstance(data, dict):
             incidents = [data]
         else:
@@ -210,7 +246,7 @@ def create_incident(
 
     # Prevent duplicate incidents
     for existing in incidents:
-        if existing["incident_id"] == incident_id:
+        if existing.get("incident_id") == incident_id:
             return {
                 "success": True,
                 "incident": existing,
@@ -229,11 +265,8 @@ def create_incident(
 
     incidents.append(incident)
 
-    # Store a single object when there is only one incident
-    if len(incidents) == 1:
-        _save(incidents_file, incidents[0])
-    else:
-        _save(incidents_file, incidents)
+    # ALWAYS store incidents as a list
+    _save(incidents_file, incidents)
 
     audit = _audit(
         action="CREATE_INCIDENT",
