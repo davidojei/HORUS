@@ -53,6 +53,7 @@ def execute(request: TransactionRequest):
     execution = execute_response(
         response=response,
         incident_id=response["incident_id"],
+        transaction_id=request.transaction_id,
     )
 
     return {
