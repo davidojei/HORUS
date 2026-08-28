@@ -1,11 +1,13 @@
 import asyncio
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 
 from agents.horus.agent import root_agent
-
 
 async def main():
     session_service = InMemorySessionService()
@@ -29,7 +31,7 @@ async def main():
         role="user",
         parts=[
             types.Part(
-                text="Investigate transaction TX-FRAUD-001."
+                text="Investigate TX-FRAUD-001 and execute the recommended containment actions."
             )
         ],
     )

@@ -685,5 +685,17 @@
     "target_id": "TX-FRAUD-003",
     "incident_id": "INC-001",
     "details": {}
+  },
+  {
+    "event_id": "AUDIT-000064",
+    "timestamp": "2026-08-28T22:46:18.470763",
+    "agent": "horus",
+    "action": "TEST_AUDIT",
+    "target_type": "SYSTEM",
+    "target_id": "TEST-001",
+    "incident_id": "INC-TEST",
+    "details": {
+      "test": true
+    }
   }
 ]

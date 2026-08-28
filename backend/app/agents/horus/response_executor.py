@@ -5,14 +5,20 @@ from .action_tools import (
     create_incident_tool,
 )
 
+from services.audit_service import write_audit_event
+
 
 def execute_response(
     response: dict,
     incident_id: str,
+    transaction_id: str | None = None,
 ) -> dict:
     """
     Execute deterministic containment actions produced
     by the HORUS response policy.
+
+    Every operational action is also recorded in the
+    HORUS audit log.
     """
 
     results = []
@@ -21,39 +27,106 @@ def execute_response(
 
         action_type = action.get("action")
 
+        # --------------------------------------------------
+        # FREEZE ACCOUNT
+        # --------------------------------------------------
+
         if action_type == "FREEZE_ACCOUNT":
 
+            target = action["account_id"]
+
             result = freeze_account_tool(
-                account_id=action["account_id"],
+                account_id=target,
                 incident_id=incident_id,
             )
+
+            audit_status = (
+                "SUCCESS"
+                if result.get("success")
+                else "FAILED"
+            )
+
+            write_audit_event(
+                incident_id=incident_id,
+                transaction_id=transaction_id,
+                action=action_type,
+                target=target,
+                status=audit_status,
+                result=result,
+            )
+
+        # --------------------------------------------------
+        # REVOKE DEVICE
+        # --------------------------------------------------
 
         elif action_type == "REVOKE_DEVICE":
 
+            target = action["device_id"]
+
             result = revoke_device_tool(
-                device_id=action["device_id"],
+                device_id=target,
                 incident_id=incident_id,
             )
+
+            audit_status = (
+                "SUCCESS"
+                if result.get("success")
+                else "FAILED"
+            )
+
+            write_audit_event(
+                incident_id=incident_id,
+                transaction_id=transaction_id,
+                action=action_type,
+                target=target,
+                status=audit_status,
+                result=result,
+            )
+
+        # --------------------------------------------------
+        # FLAG TRANSACTIONS
+        # --------------------------------------------------
 
         elif action_type == "FLAG_TRANSACTIONS":
 
             transaction_results = []
 
-            for transaction_id in action["transaction_ids"]:
+            for transaction_id_to_flag in action["transaction_ids"]:
 
                 result = flag_transaction_tool(
-                    transaction_id=transaction_id,
+                    transaction_id=transaction_id_to_flag,
                     incident_id=incident_id,
                 )
 
                 transaction_results.append(result)
+
+                audit_status = (
+                    "SUCCESS"
+                    if result.get("success")
+                    else "FAILED"
+                )
+
+                write_audit_event(
+                    incident_id=incident_id,
+                    transaction_id=transaction_id_to_flag,
+                    action="FLAG_TRANSACTION",
+                    target=transaction_id_to_flag,
+                    status=audit_status,
+                    result=result,
+                )
 
             result = {
                 "action": "FLAG_TRANSACTIONS",
                 "results": transaction_results,
             }
 
+        # --------------------------------------------------
+        # CREATE INCIDENT
+        # --------------------------------------------------
+
         elif action_type == "CREATE_INCIDENT":
+
+            target = incident_id
 
             result = create_incident_tool(
                 incident_id=incident_id,
@@ -66,6 +139,25 @@ def execute_response(
                 ),
             )
 
+            audit_status = (
+                "SUCCESS"
+                if result.get("success")
+                else "FAILED"
+            )
+
+            write_audit_event(
+                incident_id=incident_id,
+                transaction_id=transaction_id,
+                action=action_type,
+                target=target,
+                status=audit_status,
+                result=result,
+            )
+
+        # --------------------------------------------------
+        # UNKNOWN ACTION
+        # --------------------------------------------------
+
         else:
 
             result = {
@@ -73,6 +165,15 @@ def execute_response(
                 "action": action_type,
                 "error": "Unknown response action.",
             }
+
+            write_audit_event(
+                incident_id=incident_id,
+                transaction_id=transaction_id,
+                action=str(action_type),
+                target="UNKNOWN",
+                status="FAILED",
+                result=result,
+            )
 
         results.append(result)
 
