@@ -1,6 +1,12 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+from services.data_service import get_transaction
+from services.incident_api import (
+    get_incident,
+    get_incident_audit,
+)
+
 from agents.horus.investigation_tools import investigate_transaction
 from agents.horus.response_tools import determine_transaction_response
 from agents.horus.response_executor import execute_response
@@ -31,6 +37,55 @@ def health():
     }
 
 
+@app.get("/incidents/{incident_id}")
+def incident(incident_id: str):
+
+    result = get_incident(incident_id)
+
+    if not result:
+        return {
+            "success": False,
+            "incident_id": incident_id,
+            "error": "Incident not found.",
+        }
+
+    return {
+        "success": True,
+        "incident": result,
+    }
+
+
+@app.get("/incidents/{incident_id}/audit")
+def incident_audit(incident_id: str):
+
+    result = get_incident_audit(incident_id)
+
+    return {
+        "success": True,
+        "incident_id": incident_id,
+        "count": len(result),
+        "events": result,
+    }
+
+
+@app.get("/transactions/{transaction_id}")
+def transaction(transaction_id: str):
+
+    result = get_transaction(transaction_id)
+
+    if not result:
+        return {
+            "success": False,
+            "transaction_id": transaction_id,
+            "error": "Transaction not found.",
+        }
+
+    return {
+        "success": True,
+        "transaction": result,
+    }
+
+
 @app.post("/investigate")
 def investigate(request: TransactionRequest):
     return investigate_transaction(request.transaction_id)
@@ -52,7 +107,7 @@ def execute(request: TransactionRequest):
 
     execution = execute_response(
         response=response,
-        incident_id=response["incident_id"],
+	incident_id=response["incident_id"],
         transaction_id=request.transaction_id,
     )
 
