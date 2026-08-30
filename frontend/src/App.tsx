@@ -7,7 +7,6 @@ import {
   Clock3,
   CreditCard,
   Database,
-  FileWarning,
   Lock,
   Menu,
   Search,
