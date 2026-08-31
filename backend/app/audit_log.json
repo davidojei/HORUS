@@ -286,5 +286,101 @@
             },
             "already_exists": true
         }
+    },
+    {
+        "timestamp": "2026-08-31T12:37:19.987073+00:00",
+        "incident_id": "INC-001",
+        "transaction_id": "TX-FRAUD-001",
+        "action": "FREEZE_ACCOUNT",
+        "target": "ACC-2048",
+        "status": "SUCCESS",
+        "result": {
+            "success": true,
+            "action": "FREEZE_ACCOUNT",
+            "account_id": "ACC-2048",
+            "status": "FROZEN",
+            "already_frozen": true
+        }
+    },
+    {
+        "timestamp": "2026-08-31T12:37:20.010101+00:00",
+        "incident_id": "INC-001",
+        "transaction_id": "TX-FRAUD-001",
+        "action": "REVOKE_DEVICE",
+        "target": "DEV-99999",
+        "status": "SUCCESS",
+        "result": {
+            "success": true,
+            "action": "REVOKE_DEVICE",
+            "device_id": "DEV-99999",
+            "revoked": true,
+            "already_revoked": true
+        }
+    },
+    {
+        "timestamp": "2026-08-31T12:37:20.164074+00:00",
+        "incident_id": "INC-001",
+        "transaction_id": "TX-FRAUD-001",
+        "action": "FLAG_TRANSACTION",
+        "target": "TX-FRAUD-001",
+        "status": "SUCCESS",
+        "result": {
+            "success": true,
+            "action": "FLAG_TRANSACTION",
+            "transaction_id": "TX-FRAUD-001",
+            "fraud_flag": true,
+            "already_flagged": true
+        }
+    },
+    {
+        "timestamp": "2026-08-31T12:37:20.313485+00:00",
+        "incident_id": "INC-001",
+        "transaction_id": "TX-FRAUD-002",
+        "action": "FLAG_TRANSACTION",
+        "target": "TX-FRAUD-002",
+        "status": "SUCCESS",
+        "result": {
+            "success": true,
+            "action": "FLAG_TRANSACTION",
+            "transaction_id": "TX-FRAUD-002",
+            "fraud_flag": true,
+            "already_flagged": true
+        }
+    },
+    {
+        "timestamp": "2026-08-31T12:37:20.474359+00:00",
+        "incident_id": "INC-001",
+        "transaction_id": "TX-FRAUD-003",
+        "action": "FLAG_TRANSACTION",
+        "target": "TX-FRAUD-003",
+        "status": "SUCCESS",
+        "result": {
+            "success": true,
+            "action": "FLAG_TRANSACTION",
+            "transaction_id": "TX-FRAUD-003",
+            "fraud_flag": true,
+            "already_flagged": true
+        }
+    },
+    {
+        "timestamp": "2026-08-31T12:37:20.493275+00:00",
+        "incident_id": "INC-001",
+        "transaction_id": "TX-FRAUD-001",
+        "action": "CREATE_INCIDENT",
+        "target": "INC-001",
+        "status": "SUCCESS",
+        "result": {
+            "success": true,
+            "incident": {
+                "incident_id": "INC-001",
+                "type": "ACCOUNT_TAKEOVER",
+                "severity": "CRITICAL",
+                "account_id": "ACC-2048",
+                "summary": "Coordinated account takeover involving untrusted device and concurrent high-value transactions.",
+                "status": "OPEN",
+                "created_at": "2026-08-18T19:31:27.896384"
+            },
+            "already_exists": true
+        }
     }
 ]

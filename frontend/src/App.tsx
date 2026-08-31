@@ -1,574 +1,297 @@
 import { useState } from "react";
-import {
-  Activity,
-  AlertTriangle,
-  CheckCircle2,
-  ChevronRight,
-  Clock3,
-  CreditCard,
-  Database,
-  Lock,
-  Menu,
-  Search,
-  Shield,
-  ShieldAlert,
-  Smartphone,
-  Terminal,
-  UserRound,
-  X,
-  Zap,
-} from "lucide-react";
 import "./App.css";
 
 const API = "http://127.0.0.1:8007";
 
 type Investigation = {
-  found: boolean;
-  transaction?: {
-    transaction_id: string;
-    account_id: string;
-    amount: number;
-    currency: string;
-    merchant: string;
-    location: string;
-    device_id: string;
-    timestamp: string;
-    status: string;
-    fraud_flag?: boolean;
-    incident_id?: string;
-  };
-  account?: {
-    account_id: string;
-    customer_name: string;
-    country: string;
-    city: string;
-    account_type: string;
-    risk_score: number;
-    status: string;
-  };
-  historical_baseline?: {
-    transaction_count: number;
-    average_amount: number;
-    maximum_amount: number;
-    historical_locations: string[];
-    trusted_devices: string[];
-    untrusted_devices: string[];
-  };
-  security_context?: {
-    known_device_count: number;
-    untrusted_device_count: number;
-    login_event_count: number;
-  };
-  detection?: {
-    triggered_rules?: {
-      rule: string;
-      triggered: boolean;
-      score: number;
-      reason: string;
-    }[];
-    raw_score: number;
-  };
-};
-
-type AuditEvent = {
-  timestamp: string;
-  incident_id: string;
-  transaction_id: string;
-  action: string;
-  target: string;
-  status: string;
+  transaction?: any;
+  account?: any;
+  historical_baseline?: any;
+  security_context?: any;
+  detection?: any;
 };
 
 function App() {
   const [transactionId, setTransactionId] = useState("TX-FRAUD-001");
-  const [investigation, setInvestigation] = useState<Investigation | null>(
-    null,
-  );
-  const [audit, setAudit] = useState<AuditEvent[]>([]);
+  const [investigation, setInvestigation] = useState<Investigation | null>(null);
+  const [response, setResponse] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [executing, setExecuting] = useState(false);
-  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
   const investigate = async () => {
     setLoading(true);
-    setError("");
+    setMessage("");
 
     try {
-      const response = await fetch(`${API}/investigate`, {
+      const res = await fetch(`${API}/investigate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ transaction_id: transactionId }),
       });
 
-      if (!response.ok) throw new Error("Investigation request failed.");
+      const data = await res.json();
 
-      const data = await response.json();
-      setInvestigation(data);
-
-      if (data.transaction?.incident_id) {
-        await loadAudit(data.transaction.incident_id);
+      if (!data.found) {
+        setInvestigation(null);
+        setMessage(data.message || "Transaction not found.");
+      } else {
+        setInvestigation(data);
+        setResponse(null);
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to investigate.");
+    } catch {
+      setMessage("Unable to connect to HORUS backend.");
     } finally {
       setLoading(false);
     }
   };
 
   const executeContainment = async () => {
-    setExecuting(true);
-    setError("");
+    setLoading(true);
+    setMessage("");
 
     try {
-      const response = await fetch(`${API}/execute`, {
+      const res = await fetch(`${API}/execute`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ transaction_id: transactionId }),
       });
 
-      if (!response.ok) throw new Error("Containment request failed.");
-
-      const data = await response.json();
-
-      if (data.incident_id) {
-        await loadAudit(data.incident_id);
-      }
-
-      await investigate();
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Unable to execute containment.",
+      const data = await res.json();
+      setResponse(data);
+      setMessage(
+        data.success
+          ? "Containment workflow completed successfully."
+          : "Containment workflow failed."
       );
-    } finally {
-      setExecuting(false);
-    }
-  };
-
-  const loadAudit = async (incidentId: string) => {
-    try {
-      const response = await fetch(`${API}/incidents/${incidentId}/audit`);
-      if (!response.ok) return;
-
-      const data = await response.json();
-      setAudit(data.events ?? []);
     } catch {
-      // Audit is supplementary UI data.
+      setMessage("Unable to execute containment.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const tx = investigation?.transaction;
-  const account = investigation?.account;
-  const baseline = investigation?.historical_baseline;
   const detection = investigation?.detection;
-
-  const riskScore = detection?.raw_score ?? 0;
-  const critical = riskScore >= 80;
+  const riskScore = response?.risk_score ?? detection?.raw_score ?? 0;
+  const riskLevel = response?.risk_level ?? (riskScore >= 80 ? "CRITICAL" : "HIGH");
 
   return (
-    <div className="app-shell">
-      <aside className="sidebar">
-        <div className="brand">
-          <div className="brand-mark">
-            <Shield size={22} />
-          </div>
-          <div>
-            <div className="brand-name">HORUS</div>
-            <div className="brand-subtitle">SECURITY OPERATIONS</div>
-          </div>
+    <div className="app">
+      <header className="topbar">
+        <div>
+          <div className="logo">HORUS</div>
+          <div className="subtitle">Financial Security Operations Platform</div>
         </div>
 
-        <nav className="nav">
-          <button className="nav-item active">
-            <Activity size={18} />
-            Overview
-          </button>
-
-          <button className="nav-item">
-            <ShieldAlert size={18} />
-            Incidents
-            <span className="nav-count">{audit.length > 0 ? "1" : "0"}</span>
-          </button>
-
-          <button className="nav-item">
-            <CreditCard size={18} />
-            Transactions
-          </button>
-
-          <button className="nav-item">
-            <Smartphone size={18} />
-            Devices
-          </button>
-
-          <button className="nav-item">
-            <Database size={18} />
-            Audit Log
-          </button>
-        </nav>
-
-        <div className="sidebar-bottom">
-          <div className="system-status">
-            <span className="status-dot" />
-            <div>
-              <strong>System operational</strong>
-              <span>API connected</span>
-            </div>
-          </div>
-
-          <div className="version">
-            HORUS v1.0.0
-            <span>ENTERPRISE SECURITY</span>
-          </div>
+        <div className="system-status">
+          <span className="status-dot" />
+          SYSTEM OPERATIONAL
         </div>
-      </aside>
+      </header>
 
-      <main className="main">
-        <header className="topbar">
-          <div className="mobile-menu">
-            <Menu size={20} />
-          </div>
-
+      <main>
+        <section className="search-panel">
           <div>
-            <div className="eyebrow">FINANCIAL SECURITY</div>
-            <h1>Operations Console</h1>
+            <h1>Security Operations Console</h1>
+            <p>Investigate suspicious financial activity and manage containment.</p>
           </div>
 
-          <div className="topbar-right">
-            <div className="live-indicator">
-              <span />
-              LIVE
-            </div>
-            <div className="operator">
-              <div className="operator-avatar">
-                <UserRound size={17} />
-              </div>
-              <div>
-                <strong>Security Operator</strong>
-                <small>Authorized</small>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <section className="content">
-          <div className="command-bar">
-            <div className="search-box">
-              <Search size={18} />
-              <input
-                value={transactionId}
-                onChange={(e) => setTransactionId(e.target.value)}
-                placeholder="Enter transaction ID..."
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") investigate();
-                }}
-              />
-            </div>
-
-            <button
-              className="investigate-btn"
-              onClick={investigate}
-              disabled={loading || !transactionId}
-            >
-              {loading ? "Investigating..." : "Investigate Transaction"}
-              {!loading && <ChevronRight size={18} />}
+          <div className="search-box">
+            <input
+              value={transactionId}
+              onChange={(e) => setTransactionId(e.target.value)}
+              placeholder="Transaction ID"
+            />
+            <button onClick={investigate} disabled={loading}>
+              {loading ? "PROCESSING..." : "INVESTIGATE"}
             </button>
           </div>
+        </section>
 
-          {error && (
-            <div className="error-banner">
-              <AlertTriangle size={18} />
-              {error}
-              <button onClick={() => setError("")}>
-                <X size={16} />
-              </button>
-            </div>
-          )}
+        {message && <div className="message">{message}</div>}
 
-          {!investigation && !loading && (
-            <div className="empty-state">
-              <div className="empty-icon">
-                <Terminal size={28} />
+        {!investigation && (
+          <div className="empty-state">
+            <div className="empty-icon">◉</div>
+            <h2>No investigation selected</h2>
+            <p>Enter a transaction ID to begin a security investigation.</p>
+          </div>
+        )}
+
+        {investigation && (
+          <>
+            <section className="overview-grid">
+              <div className="card">
+                <span className="label">TRANSACTION</span>
+                <strong>{investigation.transaction?.transaction_id}</strong>
+                <small>{investigation.transaction?.merchant}</small>
               </div>
-              <h2>Ready for investigation</h2>
-              <p>
-                Enter a transaction ID above to analyze financial activity,
-                detect anomalies, and review containment options.
-              </p>
-              <button onClick={investigate}>
-                Investigate TX-FRAUD-001
-              </button>
-            </div>
-          )}
 
-          {loading && (
-            <div className="empty-state">
-              <div className="loading-ring" />
-              <h2>Analyzing transaction</h2>
-              <p>
-                HORUS is gathering enterprise evidence and evaluating
-                deterministic fraud signals.
-              </p>
-            </div>
-          )}
+              <div className="card">
+                <span className="label">ACCOUNT</span>
+                <strong>{investigation.account?.account_id}</strong>
+                <small>{investigation.account?.customer_name}</small>
+              </div>
 
-          {investigation && tx && account && (
-            <>
-              <div className="incident-header">
-                <div>
-                  <div className="eyebrow">ACTIVE INVESTIGATION</div>
-                  <h2>
-                    {tx.incident_id || "NO INCIDENT"}{" "}
-                    <span className="open-badge">OPEN</span>
-                  </h2>
+              <div className="card">
+                <span className="label">AMOUNT</span>
+                <strong>
+                  ₦{Number(investigation.transaction?.amount || 0).toLocaleString()}
+                </strong>
+                <small>{investigation.transaction?.currency}</small>
+              </div>
+
+              <div className={`card risk ${riskLevel.toLowerCase()}`}>
+                <span className="label">RISK LEVEL</span>
+                <strong>{riskLevel}</strong>
+                <small>Score: {riskScore}/100</small>
+              </div>
+            </section>
+
+            <section className="content-grid">
+              <div className="panel">
+                <div className="panel-header">
+                  <h2>Detected Anomalies</h2>
+                  <span>{detection?.triggered_rules?.length || 0} signals</span>
                 </div>
 
-                <div className="incident-time">
-                  <Clock3 size={15} />
-                  {new Date(tx.timestamp).toLocaleString()}
-                </div>
-              </div>
-
-              <div className="dashboard-grid">
-                <section className="card risk-card">
-                  <div className="card-header">
-                    <span>RISK ASSESSMENT</span>
-                    <ShieldAlert size={18} />
-                  </div>
-
-                  <div className={`risk-score ${critical ? "critical" : ""}`}>
-                    <strong>{riskScore}</strong>
-                    <span>/ 100</span>
-                  </div>
-
-                  <div className="risk-level">
-                    <span className="risk-dot" />
-                    {critical ? "CRITICAL" : "ELEVATED"}
-                  </div>
-
-                  <div className="risk-bar">
-                    <div style={{ width: `${Math.min(riskScore, 100)}%` }} />
-                  </div>
-
-                  <p className="muted">
-                    Deterministic risk engine assessment
-                  </p>
-                </section>
-
-                <section className="card transaction-card">
-                  <div className="card-header">
-                    <span>TRANSACTION</span>
-                    <CreditCard size={18} />
-                  </div>
-
-                  <div className="transaction-amount">
-                    ₦{tx.amount.toLocaleString()}
-                  </div>
-
-                  <div className="merchant">{tx.merchant}</div>
-
-                  <div className="detail-grid">
-                    <Detail label="Transaction ID" value={tx.transaction_id} />
-                    <Detail label="Account" value={tx.account_id} />
-                    <Detail label="Location" value={tx.location} />
-                    <Detail label="Device" value={tx.device_id} />
-                  </div>
-                </section>
-
-                <section className="card account-card">
-                  <div className="card-header">
-                    <span>ACCOUNT</span>
-                    <UserRound size={18} />
-                  </div>
-
-                  <div className="account-name">{account.customer_name}</div>
-                  <div className="account-type">
-                    {account.account_type} ACCOUNT
-                  </div>
-
-                  <div className="account-status">
-                    <span className="status-dot" />
-                    {account.status}
-                  </div>
-
-                  <div className="detail-grid">
-                    <Detail label="Account ID" value={account.account_id} />
-                    <Detail label="Registered City" value={account.city} />
-                    <Detail label="Country" value={account.country} />
-                    <Detail
-                      label="Account Risk"
-                      value={`${account.risk_score}/100`}
-                    />
-                  </div>
-                </section>
-              </div>
-
-              <div className="section-title">
-                <div>
-                  <div className="eyebrow">DETECTION ENGINE</div>
-                  <h2>Why HORUS flagged this activity</h2>
-                </div>
-                <span className="deterministic">
-                  <Zap size={14} /> DETERMINISTIC
-                </span>
-              </div>
-
-              <section className="signals-grid">
-                {detection?.triggered_rules?.map((rule) => (
-                  <div className="signal-card" key={rule.rule}>
-                    <div className="signal-top">
-                      <div className="signal-icon">
-                        <AlertTriangle size={17} />
+                <div className="signals">
+                  {detection?.triggered_rules?.map((rule: any) => (
+                    <div className="signal" key={rule.rule}>
+                      <div className="signal-title">
+                        <span className="signal-dot" />
+                        {rule.rule}
+                        <b>+{rule.score}</b>
                       </div>
-                      <span>+{rule.score}</span>
+                      <p>{rule.reason}</p>
                     </div>
-                    <h3>{formatRule(rule.rule)}</h3>
-                    <p>{rule.reason}</p>
-                  </div>
-                ))}
-              </section>
+                  ))}
+                </div>
+              </div>
 
-              <div className="lower-grid">
-                <section className="card containment-card">
-                  <div className="card-header">
-                    <div>
-                      <span>RESPONSE</span>
-                      <h2>Containment</h2>
-                    </div>
-                    <Lock size={18} />
+              <div className="panel">
+                <div className="panel-header">
+                  <h2>Account Intelligence</h2>
+                </div>
+
+                <div className="intel-list">
+                  <div>
+                    <span>Registered Location</span>
+                    <strong>
+                      {investigation.account?.city},{" "}
+                      {investigation.account?.country}
+                    </strong>
                   </div>
 
-                  <div className="containment-warning">
-                    <AlertTriangle size={18} />
-                    <div>
-                      <strong>Explicit authorization required</strong>
-                      <p>
-                        Executing containment modifies enterprise state.
-                        Review the evidence before proceeding.
-                      </p>
-                    </div>
+                  <div>
+                    <span>Transaction Location</span>
+                    <strong>{investigation.transaction?.location}</strong>
+                  </div>
+
+                  <div>
+                    <span>Device</span>
+                    <strong>{investigation.transaction?.device_id}</strong>
+                  </div>
+
+                  <div>
+                    <span>Device Trust</span>
+                    <strong>
+                      {investigation.historical_baseline?.untrusted_devices?.includes(
+                        investigation.transaction?.device_id
+                      )
+                        ? "UNTRUSTED"
+                        : "TRUSTED"}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>Historical Average</span>
+                    <strong>
+                      ₦
+                      {Number(
+                        investigation.historical_baseline?.average_amount || 0
+                      ).toLocaleString()}
+                    </strong>
+                  </div>
+
+                  <div>
+                    <span>Account Status</span>
+                    <strong>{investigation.account?.status}</strong>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="panel">
+              <div className="panel-header">
+                <h2>Containment</h2>
+                <span>Explicit authorization required</span>
+              </div>
+
+              {!response ? (
+                <div className="containment">
+                  <div>
+                    <h3>Recommended response</h3>
+                    <p>
+                      HORUS has identified a {riskLevel.toLowerCase()}-risk
+                      transaction. Execute the deterministic containment
+                      workflow to apply the response policy.
+                    </p>
                   </div>
 
                   <button
-                    className="contain-btn"
+                    className="danger-button"
                     onClick={executeContainment}
-                    disabled={executing}
+                    disabled={loading}
                   >
-                    {executing
-                      ? "Executing containment..."
-                      : "Execute Recommended Containment"}
+                    EXECUTE CONTAINMENT
                   </button>
-                </section>
-
-                <section className="card baseline-card">
-                  <div className="card-header">
-                    <div>
-                      <span>BEHAVIORAL BASELINE</span>
-                      <h2>Account history</h2>
-                    </div>
-                    <Activity size={18} />
-                  </div>
-
-                  <div className="baseline-stats">
-                    <Metric
-                      label="Transactions"
-                      value={baseline?.transaction_count ?? 0}
-                    />
-                    <Metric
-                      label="Average"
-                      value={`₦${Math.round(
-                        baseline?.average_amount ?? 0,
-                      ).toLocaleString()}`}
-                    />
-                    <Metric
-                      label="Max"
-                      value={`₦${Math.round(
-                        baseline?.maximum_amount ?? 0,
-                      ).toLocaleString()}`}
-                    />
-                  </div>
-
-                  <div className="device-summary">
-                    <div>
-                      <span className="green-dot" />
-                      Trusted devices
-                      <strong>{baseline?.trusted_devices.length ?? 0}</strong>
-                    </div>
-                    <div>
-                      <span className="red-dot" />
-                      Untrusted devices
-                      <strong>{baseline?.untrusted_devices.length ?? 0}</strong>
-                    </div>
-                  </div>
-                </section>
-              </div>
-
-              <section className="card audit-card">
-                <div className="card-header">
-                  <div>
-                    <span>AUDIT TRAIL</span>
-                    <h2>Incident activity</h2>
-                  </div>
-                  <Database size={18} />
                 </div>
-
-                {audit.length === 0 ? (
-                  <div className="audit-empty">
-                    No containment actions recorded for this incident.
+              ) : (
+                <div className="results">
+                  <div className="execution-header">
+                    <h3>
+                      {response.success
+                        ? "Containment Completed"
+                        : "Containment Failed"}
+                    </h3>
+                    <span>{response.incident_id}</span>
                   </div>
-                ) : (
-                  <div className="audit-list">
-                    {audit.slice(-8).map((event, index) => (
-                      <div className="audit-row" key={`${event.timestamp}-${index}`}>
-                        <div className="audit-icon">
-                          <CheckCircle2 size={16} />
+
+                  {response.execution?.results?.map(
+                    (result: any, index: number) => (
+                      <div className="action-result" key={index}>
+                        <span className="check">
+                          {result.success !== false ? "✓" : "×"}
+                        </span>
+
+                        <div>
+                          <strong>
+                            {result.action || "FLAG_TRANSACTIONS"}
+                          </strong>
+
+                          <small>
+                            {result.account_id ||
+                              result.device_id ||
+                              result.transaction_id ||
+                              result.incident?.incident_id ||
+                              "Multiple transactions"}
+                          </small>
                         </div>
 
-                        <div className="audit-main">
-                          <strong>{formatRule(event.action)}</strong>
-                          <span>{event.target}</span>
-                        </div>
-
-                        <div className="audit-status">{event.status}</div>
-
-                        <time>
-                          {new Date(event.timestamp).toLocaleTimeString()}
-                        </time>
+                        <span className="success-text">
+                          {result.success !== false ? "SUCCESS" : "FAILED"}
+                        </span>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </section>
-            </>
-          )}
-        </section>
+                    )
+                  )}
+                </div>
+              )}
+            </section>
+          </>
+        )}
       </main>
     </div>
   );
-}
-
-function Detail({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="detail">
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
-  );
-}
-
-function Metric({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="metric">
-      <span>{label}</span>
-      <strong>{value}</strong>
-    </div>
-  );
-}
-
-function formatRule(value: string) {
-  return value
-    .toLowerCase()
-    .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
 }
 
 export default App;
