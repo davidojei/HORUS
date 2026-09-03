@@ -31,7 +31,7 @@ async def main():
         role="user",
         parts=[
             types.Part(
-                text="Investigate TX-FRAUD-001 and exehhppppcute the recommended containment actions."
+                text="Investigate TX-FRAUD-001 and exepcute the recommended containment actions."
             )
         ],
     )
